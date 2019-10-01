@@ -48,7 +48,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
-    name: asbb
+    name: asbbc
   roleRef:
     name: admin
     kind: ClusterRole
@@ -61,7 +61,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
   metadata:
-    name: asb-authb
+    name: asb-authbc
   rules:
   - apiGroups: [""]
     resources: ["namespaces"]
@@ -95,7 +95,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
-    name: asb-auth-bindb
+    name: asb-auth-bindbc
   subjects:
   - kind: ServiceAccount
     name: asb
@@ -108,7 +108,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
   metadata:
-    name: access-asb-roleb
+    name: access-asb-rolebc
   rules:
   - nonResourceURLs: ["/ansible-service-broker", "/ansible-service-broker/*"]
     verbs: ["get", "post", "put", "patch", "delete"]
