@@ -311,7 +311,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
-    name: ansibleservicebroker-clientc
+    name: ansibleservicebroker-clientt
   subjects:
   - kind: ServiceAccount
     name: ansibleservicebroker-client
@@ -348,7 +348,7 @@ objects:
 - apiVersion: servicecatalog.k8s.io/v1beta1
   kind: ClusterServiceBroker
   metadata:
-    name: ansible-service-brokerc
+    name: ansible-service-brokerr
   spec:
     url: https://asb.ansible-service-broker.svc:1338/ansible-service-broker/
     authInfo:
