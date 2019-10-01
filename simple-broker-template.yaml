@@ -6,10 +6,10 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: as
+    name: asb
     labels:
       app: ansible-service-broker
-      service: as
+      service: asb
     annotations:
       service.alpha.openshift.io/serving-cert-secret-name: asb-tls
   spec:
@@ -25,10 +25,10 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: as-etcd
+    name: asb-etcd
     labels:
       app: etcd
-      service: as-etcd
+      service: asb-etcd
   spec:
     ports:
       - name: port-2379
@@ -37,31 +37,31 @@ objects:
         protocol: TCP
     selector:
       app: etcd
-      service: as-etcd
+      service: asb-etcd
 
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: as
+    name: asb
     namespace: ansible-service-broker
 
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
-    name: as
+    name: asb
   roleRef:
     name: admin
     kind: ClusterRole
     apiGroup: rbac.authorization.k8s.io
   subjects:
   - kind: ServiceAccount
-    name: as
+    name: asb
     namespace: ansible-service-broker
 
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
   metadata:
-    name: as-auth
+    name: asb-auth
   rules:
   - apiGroups: [""]
     resources: ["namespaces"]
@@ -95,20 +95,20 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
-    name: as-auth-bind
+    name: asb-auth-bind
   subjects:
   - kind: ServiceAccount
-    name: as
+    name: asb
     namespace: ansible-service-broker
   roleRef:
     kind: ClusterRole
-    name: as-auth
+    name: asb-auth
     apiGroup: rbac.authorization.k8s.io
 
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
   metadata:
-    name: access-as-role
+    name: access-asb-role
   rules:
   - nonResourceURLs: ["/ansible-service-broker", "/ansible-service-broker/*"]
     verbs: ["get", "post", "put", "patch", "delete"]
@@ -116,7 +116,7 @@ objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: etc
+    name: etcd
     namespace: ansible-service-broker
   spec:
     accessModes:
@@ -128,10 +128,10 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: as
+    name: asb
     labels:
       app: ansible-service-broker
-      service: as
+      service: asb
   spec:
     replicas: 1
     selector:
@@ -142,20 +142,20 @@ objects:
       metadata:
         labels:
           app: ansible-service-broker
-          service: as
+          service: asb
       spec:
-        serviceAccount: as
+        serviceAccount: asb
         containers:
-        - image: ansibleplaybookbundle/mysql-apb
+        - image: ansibleplaybookbundle/origin-ansible-service-broker:release-1.1
           name: asb
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: config-volume
               mountPath: /etc/ansible-service-broker
-            - name: as-tls
+            - name: asb-tls
               mountPath: /etc/tls/private
             - name: asb-auth-volume
-              mountPath: /var/run/as-auth
+              mountPath: /var/run/asb-auth
           ports:
             - containerPort: 1338
               protocol: TCP
@@ -185,42 +185,42 @@ objects:
               items:
               - key: broker-config
                 path: config.yaml
-          - name: as-tls
+          - name: asb-tls
             secret:
-              secretName: as-tls
-          - name: as-auth-volume
+              secretName: asb-tls
+          - name: asb-auth-volume
             secret:
-              secretName: as-auth-secret
+              secretName: asb-auth-secret
 
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: as-etc
+    name: asb-etcd
     labels:
-      app: etc
-      service: as-etc
+      app: etcd
+      service: asb-etcd
   spec:
     replicas: 1
     selector:
-      app: etc
+      app: etcd
     strategy:
       type: Rolling
     template:
       metadata:
         labels:
-          app: etc
-          service: as-etc
+          app: etcd
+          service: asb-etcd
       spec:
-        serviceAccount: as
+        serviceAccount: asb
         containers:
         - image: ${ETCD_IMAGE}
-          name: etc
+          name: etcd
           volumeMounts:
-            - name: etc
+            - name: etcd
               mountPath: /data
           imagePullPolicy: IfNotPresent
           terminationMessagePath: /tmp/termination-log
-          workingDir: /etc
+          workingDir: /etcd
           args:
             - ${ETCD_PATH}
             - --data-dir=/data
@@ -233,14 +233,14 @@ objects:
           - name: ETCDCTL_API
             value: "3"
         volumes:
-          - name: etc
+          - name: etcd
             persistentVolumeClaim:
-              claimName: etc
+              claimName: etcd
 
 - apiVersion: v1
   kind: Secret
   metadata:
-    name: as-auth-secret
+    name: asb-auth-secret
     namespace: ansible-service-broker
   data:
     username: ${BROKER_USER}
@@ -273,7 +273,7 @@ objects:
           white_list:
             - ".*-apb$"
       dao:
-        etcd_host: as-etc.ansible-service-broker.svc
+        etcd_host: asb-etcd.ansible-service-broker.svc
         etcd_port: 2379
       log:
         logfile: /var/log/ansible-service-broker/asb.log
@@ -318,7 +318,7 @@ objects:
     namespace: ansible-service-broker
   roleRef:
     kind: ClusterRole
-    name: access-as-role
+    name: access-asb-role
     apiGroup: rbac.authorization.k8s.io
 
 - apiVersion: v1
@@ -332,14 +332,14 @@ objects:
 - apiVersion: v1
   kind: Route
   metadata:
-    name: as-1338
+    name: asb-1338
     labels:
       app: ansible-service-broker
-      service: as
+      service: asb
   spec:
     to:
       kind: Service
-      name: as
+      name: asb
     port:
       targetPort: port-1338
     tls:
