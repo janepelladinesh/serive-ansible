@@ -48,7 +48,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
-    name: asbc
+    name: asb
   roleRef:
     name: admin
     kind: ClusterRole
@@ -61,7 +61,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
   metadata:
-    name: asb-authc
+    name: asb-auth
   rules:
   - apiGroups: [""]
     resources: ["namespaces"]
@@ -95,7 +95,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
-    name: asb-auth-bindc
+    name: asb-auth-bind
   subjects:
   - kind: ServiceAccount
     name: asb
@@ -108,7 +108,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
   metadata:
-    name: access-asb-rolec
+    name: access-asb-role
   rules:
   - nonResourceURLs: ["/ansible-service-broker", "/ansible-service-broker/*"]
     verbs: ["get", "post", "put", "patch", "delete"]
@@ -146,7 +146,7 @@ objects:
       spec:
         serviceAccount: asb
         containers:
-        - image: ansibleplaybookbundle/origin-ansible-service-broker:release-1.1
+        - image: ansibleplaybookbundle/mysql-apb
           name: asb
           imagePullPolicy: IfNotPresent
           volumeMounts:
@@ -311,7 +311,7 @@ objects:
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
-    name: ansibleservicebroker-clientc
+    name: ansibleservicebroker-client
   subjects:
   - kind: ServiceAccount
     name: ansibleservicebroker-client
@@ -348,7 +348,7 @@ objects:
 - apiVersion: servicecatalog.k8s.io/v1beta1
   kind: ClusterServiceBroker
   metadata:
-    name: ansible-service-brokerc
+    name: ansible-service-broker
   spec:
     url: https://asb.ansible-service-broker.svc:1338/ansible-service-broker/
     authInfo:
