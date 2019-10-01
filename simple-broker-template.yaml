@@ -45,73 +45,13 @@ objects:
     name: asb
     namespace: ansible-service-broker
 
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRoleBinding
-  metadata:
-    name: asbbccb
-  roleRef:
-    name: admin
-    kind: ClusterRole
-    apiGroup: rbac.authorization.k8s.io
-  subjects:
-  - kind: ServiceAccount
-    name: asb
-    namespace: ansible-service-broker
 
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    name: asb-authbccb
-  rules:
-  - apiGroups: [""]
-    resources: ["namespaces"]
-    verbs: ["create", "delete"]
-  - apiGroups: ["authorization.openshift.io"]
-    resources: ["subjectrulesreview"]
-    verbs: ["create"]
-  - apiGroups: ["authorization.k8s.io"]
-    resources: ["subjectaccessreviews"]
-    verbs: ["create"]
-  - apiGroups: ["authentication.k8s.io"]
-    resources: ["tokenreviews"]
-    verbs: ["create"]
-  - apiGroups: ["image.openshift.io", ""]
-    attributeRestrictions: null
-    resources: ["images"]
-    verbs: ["get", "list"]
-  - apiGroups: ["network.openshift.io", ""]
-    attributeRestrictions: null
-    resources: ["clusternetworks", "netnamespaces"]
-    verbs: ["get"]
-  - apiGroups: ["network.openshift.io", ""]
-    attributeRestrictions: null
-    resources: ["netnamespaces"]
-    verbs: ["update"]
-  - apiGroups: ["networking.k8s.io", ""]
-    attributeRestrictions: null
-    resources: ["networkpolicies"]
-    verbs: ["create", "delete"]
 
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRoleBinding
-  metadata:
-    name: asb-auth-bindbccb
-  subjects:
-  - kind: ServiceAccount
-    name: asb
-    namespace: ansible-service-broker
-  roleRef:
-    kind: ClusterRole
-    name: asb-auth
-    apiGroup: rbac.authorization.k8s.io
 
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    name: access-asb-rolebccb
-  rules:
-  - nonResourceURLs: ["/ansible-service-broker", "/ansible-service-broker/*"]
-    verbs: ["get", "post", "put", "patch", "delete"]
+
+
+
+
 
 - apiVersion: v1
   kind: PersistentVolumeClaim
@@ -308,18 +248,7 @@ objects:
     name: ansibleservicebroker-client
     namespace: ansible-service-broker
 
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRoleBinding
-  metadata:
-    name: ansibleservicebroker-clienttcb
-  subjects:
-  - kind: ServiceAccount
-    name: ansibleservicebroker-client
-    namespace: ansible-service-broker
-  roleRef:
-    kind: ClusterRole
-    name: access-asb-role
-    apiGroup: rbac.authorization.k8s.io
+
 
 - apiVersion: v1
   kind: Secret
@@ -345,15 +274,7 @@ objects:
     tls:
       termination: reencrypt
 
-- apiVersion: servicecatalog.k8s.io/v1beta1
-  kind: ClusterServiceBroker
-  metadata:
-    name: ansible-service-brokerrcb
-  spec:
-    url: https://asb.ansible-service-broker.svc:1338/ansible-service-broker/
-    authInfo:
-      ${{BROKER_AUTH}}
-    insecureSkipTLSVerify: true
+
 
 parameters:
 - description: Service Broker CA Cert.
